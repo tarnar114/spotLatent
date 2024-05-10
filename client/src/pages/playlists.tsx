@@ -1,47 +1,50 @@
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, } from "@tanstack/react-router";
 import img from "../assets/no-img-play.png";
 export default function Playlists() {
-  const navigate=useNavigate()
   const [playlists, setUserPlaylists] = useState();
-  const [loading, setLoading] = useState(true);
+
   const playlistItems = (data: any) => {
-    const items = data.map((item: any, index: Number) => {
+    console.log(data)
+    const items = data.map((item: any, index: number) => {
       const images = item["images"];
-      if (images.length > 0) {
+      const id = item["id"];
+      if (images !== null) {
         const imgURL = images[0]["url"];
         return (
-          <Button
-            variant="text"
-            style={{ display: "flex", flexDirection: "column" }}
-            onClick={()=>{
-              navigate('/model')
+          <Link
+            to="/model/$playlistId"
+            params={{
+              playlistId: id,
             }}
           >
-            <img
-              src={imgURL}
-              width="100"
-              alt="folder"
-            />
-            <label>Pictures</label>
-          </Button>
+            <Button
+              variant="text"
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <img src={imgURL} width="100" alt="folder" />
+              <label>Pictures</label>
+            </Button>
+          </Link>
         );
       }
       return (
-        <Button
-          variant="text"
-          style={{ display: "flex", flexDirection: "column" }}
-
+        <Link
+          to="/model/$playlistId"
+          params={{
+            playlistId: id,
+          }}
         >
-          <img
-            src={img}
-            width="100"
-            alt="folder"
-          />
-          <label>Pictures</label>
-        </Button>
+          <Button
+            variant="text"
+            style={{ display: "flex", flexDirection: "column" }}
+          >
+            <img src={img} width="100" alt="folder" />
+            <label>Pictures</label>
+          </Button>
+        </Link>
       );
     });
     return items;
@@ -52,7 +55,7 @@ export default function Playlists() {
     const user_id = window.sessionStorage.getItem("user_id");
     console.log(user_id);
     const userPlaylists = await axios
-      .get("http://localhost:5000/get_user_playlists", {
+      .get("/api/get_user_playlists", {
         params: { token: token, user_id: user_id },
       })
       .then((res) => res.data)
